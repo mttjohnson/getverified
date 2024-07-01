@@ -46,3 +46,11 @@ git add *
 git commit -m "testing a commit after setting git configs for signing commits"
 git push
 ```
+
+...this still results in an Unverified commit. It turns out you have to add an additional flag `-S` to the git commit in order to sign it.
+
+```bash
+git add *
+git commit -S -m "testing a commit after using -S with the git commit command"
+git push
+```
