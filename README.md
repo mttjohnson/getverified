@@ -98,5 +98,10 @@ Adding a sign-off line to a commit using the cli
 ```bash
 git add *
 git commit -s -m "testing a sign-off message with -s"
+git push
+```
 
+Adding a sign-off line to each commit message as a config for a specific and individual repo... not as a global config.
+```bash
+git config format.signoff true
 ```
