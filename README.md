@@ -136,3 +136,7 @@ BASH_CODE
 ) > .git/hooks/commit-msg
 chmod +x .git/hooks/commit-msg
 ```
+
+...and now we can have nice things:
+
+![Commit showing "Verified" tag and "Signed-off-by" message.](files/verified_commit_with_signoff.png?raw=true "Verified (signed) commit with Signed-off-by comment")
