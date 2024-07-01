@@ -54,3 +54,19 @@ git add *
 git commit -S -m "testing a commit after using -S with the git commit command"
 git push
 ```
+
+This results in a Verified commit, but it's possible to add a config so this additional `-S` is not required on every commit.
+
+https://docs.gitlab.com/ee/user/project/repository/signed_commits/ssh.html
+
+```bash
+git config --global commit.gpgsign true
+```
+
+Having this config in place
+
+```bash
+git add *
+git commit -m "testing another Verified signed commit"
+git push
+```
