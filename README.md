@@ -104,6 +104,7 @@ git push
 It's possible to add a git hook to a specific repo that will automatically signoff the commit
 
 ```bash
+git config commit.signoff true
 (cat <<'BASH_CODE'
 #!/bin/sh
 
