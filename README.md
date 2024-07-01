@@ -126,11 +126,18 @@ if ! grep -q "^Signed-off-by:" "$1"; then
 fi
 BASH_CODE
 ) > .git/hooks/commit-msg
+chmod +x .git/hooks/commit-msg
 ```
 
 that didn't seem to work immediately... maybe it needs to run from the CLI instead of from Fork?
 ```bash
-git add *
-git commit -m "testing a sign-off message with -s"
+git add README.md
+git commit -m "testing an automatic sign-off using .git/hooks/commit-msg"
 git push
 ```
+
+running the git commit from the CLI at least provided a helpful message:
+```
+hint: The '.git/hooks/commit-msg' hook was ignored because it's not set as executable.
+```
+...so that's been fixed now...
