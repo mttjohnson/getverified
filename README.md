@@ -101,7 +101,29 @@ git commit -s -m "testing a sign-off message with -s"
 git push
 ```
 
-Adding a sign-off line to each commit message as a config for a specific and individual repo... not as a global config.
+It's possible to add a git hook to a specific repo that will automatically signoff the commit
+
 ```bash
-git config format.signoff true
+(cat <<'BASH_CODE'
+#!/bin/sh
+
+# Automatically signoff all commits.
+GIT_AUTHOR="$(git var GIT_AUTHOR_IDENT | sed 's/^\(.*>\).*$/\1/')"
+GIT_COMMITTER="$(git var GIT_COMMITTER_IDENT | sed 's/^\(.*>\).*$/\1/')"
+git config --bool --get commit.signoff >/dev/null
+if [ $? = 0 -a "${GIT_AUTHOR}" = "${GIT_COMMITTER}" ]; then
+  SOB="Signed-off-by: ${GIT_AUTHOR}"
+  git -c trailer.ifexists=doNothing interpret-trailers \
+        --trailer "${SOB}" < "$1" > "${dest}"
+  mv "${dest}" "$1"
+fi
+
+if ! grep -q "^Signed-off-by:" "$1"; then
+  echo "Commit message is not signed off: $1"
+  echo "Use 'git commit -s' to sign off the commit message."
+  echo "Use 'git config commit.signoff true' to automatically sign off commits."
+  exit 1
+fi
+BASH_CODE
+) > .git/hooks/commit-msg
 ```
