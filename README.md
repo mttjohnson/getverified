@@ -70,3 +70,26 @@ git add *
 git commit -m "testing another Verified signed commit"
 git push
 ```
+
+To verify commits locally there are a few additional things needed
+
+Setup an allowed_signers file
+```bash
+touch ~/.ssh/allowed_signers
+git config --global gpg.ssh.allowedSignersFile ~/.ssh/allowed_signers
+echo "$(git config --get user.email) namespaces=\"git\" $(cat ~/.ssh/id_ed25519.pub)" >> ~/.ssh/allowed_signers
+```
+
+Then you'll be able to verify the git commits against the expected allowed signers.
+```bash
+git log --show-signature
+```
+...and see something like this:
+```
+commit c04908e6120002c5ade30066759b3ca9845d9f2c (HEAD -> main, origin/main)
+Good "git" signature for m@ttjohnson.com with ED25519 key SHA256:JEx/Jj5vRc+Cfy8pvPzURGQZyEqrvhAGdOj5mtylHGw
+Author: Matt Johnson <m@ttjohnson.com>
+Date:   Sun Jun 30 20:46:20 2024 -0500
+
+    testing another Verified signed commit
+```
