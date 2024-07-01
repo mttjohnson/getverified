@@ -135,3 +135,40 @@ BASH_CODE
 ) > .git/hooks/commit-msg
 chmod +x .git/hooks/commit-msg
 ```
+
+Rather than it just being a local git hook in `.git/hooks/commit-msg` you can add it to the repo (`.git-hooks/commit-msg`) so that the git hook is applied to anyone that checks out the repo.
+
+```bash
+mkdir -p .git-hooks
+(cat <<'BASH_CODE'
+#!/bin/sh
+
+# Automatically signoff all commits.
+
+# $RANDOM will be undefined if not using bash, so don't use set -u
+random=$( (whoami ; hostname ; date; cat $1 ; echo $RANDOM) | git hash-object --stdin)
+dest="$1.tmp.${random}"
+
+trap 'rm -f "${dest}"' EXIT
+
+GIT_AUTHOR="$(git var GIT_AUTHOR_IDENT | sed 's/^\(.*>\).*$/\1/')"
+GIT_COMMITTER="$(git var GIT_COMMITTER_IDENT | sed 's/^\(.*>\).*$/\1/')"
+git config --bool --get commit.signoff >/dev/null
+if [ $? = 0 -a "${GIT_AUTHOR}" = "${GIT_COMMITTER}" ]; then
+  SOB="Signed-off-by: ${GIT_AUTHOR} (.git-hooks/commit-msg)"
+  git -c trailer.ifexists=doNothing interpret-trailers \
+        --trailer "${SOB}" < "$1" > "${dest}"
+  mv "${dest}" "$1"
+fi
+
+if ! grep -q "^Signed-off-by:" "$1"; then
+  echo "Commit message is not signed off: $1"
+  echo "Use 'git commit -s' to sign off the commit message."
+  echo "Use 'git config commit.signoff true' to automatically sign off commits."
+  exit 1
+fi
+BASH_CODE
+) > .git-hooks/commit-msg
+chmod +x .git-hooks/commit-msg
+
+```
