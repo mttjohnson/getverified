@@ -108,11 +108,18 @@ It's possible to add a git hook to a specific repo that will automatically signo
 #!/bin/sh
 
 # Automatically signoff all commits.
+
+# $RANDOM will be undefined if not using bash, so don't use set -u
+random=$( (whoami ; hostname ; date; cat $1 ; echo $RANDOM) | git hash-object --stdin)
+dest="$1.tmp.${random}"
+
+trap 'rm -f "${dest}"' EXIT
+
 GIT_AUTHOR="$(git var GIT_AUTHOR_IDENT | sed 's/^\(.*>\).*$/\1/')"
 GIT_COMMITTER="$(git var GIT_COMMITTER_IDENT | sed 's/^\(.*>\).*$/\1/')"
 git config --bool --get commit.signoff >/dev/null
 if [ $? = 0 -a "${GIT_AUTHOR}" = "${GIT_COMMITTER}" ]; then
-  SOB="Signed-off-by: ${GIT_AUTHOR}"
+  SOB="Signed-off-by: ${GIT_AUTHOR} (.git/hooks/commit-msg)"
   git -c trailer.ifexists=doNothing interpret-trailers \
         --trailer "${SOB}" < "$1" > "${dest}"
   mv "${dest}" "$1"
@@ -128,16 +135,3 @@ BASH_CODE
 ) > .git/hooks/commit-msg
 chmod +x .git/hooks/commit-msg
 ```
-
-that didn't seem to work immediately... maybe it needs to run from the CLI instead of from Fork?
-```bash
-git add README.md
-git commit -m "testing an automatic sign-off using .git/hooks/commit-msg"
-git push
-```
-
-running the git commit from the CLI at least provided a helpful message:
-```
-hint: The '.git/hooks/commit-msg' hook was ignored because it's not set as executable.
-```
-...so that's been fixed now...
