@@ -127,3 +127,10 @@ fi
 BASH_CODE
 ) > .git/hooks/commit-msg
 ```
+
+that didn't seem to work immediately... maybe it needs to run from the CLI instead of from Fork?
+```bash
+git add *
+git commit -m "testing a sign-off message with -s"
+git push
+```
