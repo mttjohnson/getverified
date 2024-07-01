@@ -93,3 +93,8 @@ Date:   Sun Jun 30 20:46:20 2024 -0500
 
     testing another Verified signed commit
 ```
+
+Adding a sign-off line to each commit message
+```bash
+git config --global format.signoff true
+```
