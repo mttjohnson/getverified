@@ -94,7 +94,9 @@ Date:   Sun Jun 30 20:46:20 2024 -0500
     testing another Verified signed commit
 ```
 
-Adding a sign-off line to each commit message
+Adding a sign-off line to a commit using the cli
 ```bash
-git config --global format.signoff true
+git add *
+git commit -s -m "testing a sign-off message with -s"
+
 ```
